@@ -12,7 +12,7 @@ has 'notify_dbh' => (
 sub _build_notify_dbh {
 	my $self = shift;
 	return $self->dbh if $self->can('dbh');
-	return self->schema->storage->dbh if $self->can('schema');
+	return $self->schema->storage->dbh if $self->can('schema');
 }
 
 sub listen {
@@ -20,7 +20,7 @@ sub listen {
 	my $queue = $args{queue} || return undef;
 
 	for my $q (ref $queue ? @$queue : ($queue)) {
-		$self->notify_dbh->do(qq{listen $q;});
+		$self->notify_dbh->do(qq{listen "$q";});
 	}
 	return $queue;
 }
@@ -30,7 +30,7 @@ sub unlisten {
 	my $queue = $args{queue} || return undef;
 
 	for my $q (ref $queue ? @$queue : ($queue)) {
-		$self->notify_dbh->do(qq{unlisten $q;});
+		$self->notify_dbh->do(qq{unlisten "$q";});
 	}
 	return $queue;
 }
